@@ -1,0 +1,10 @@
+[package]
+name = "ttt"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "ttt"
+path = "main.rs"
+
+[dependencies]
