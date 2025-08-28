@@ -8,3 +8,4 @@ name = "ttt"
 path = "main.rs"
 
 [dependencies]
+clap = "4.5.46"
