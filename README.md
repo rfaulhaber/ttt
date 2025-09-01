@@ -9,25 +9,46 @@ ttt can be used either to generate a truth table from a boolean expression or ch
 Use the `table` command to make a truth table.
 
 ``` shell
-ttt table a or not b
+ttt table "a or not b"
+```
+
+```text
+   a   b  Result
+----------------
+   F   F       T
+   F   T       F
+   T   F       T
+   T   T       T
 ```
 
 ### Checking equivalence
 Use the `eq` command to check expression equivalency:
 
 ``` shell
-ttt eq --left a or not b --right not a or b
+ttt eq "a or not b" "not a or b"
 ```
 
-### Checking for difference
-Similar to `eq`, ttt can describe how two expressions differ:
+```text
+✗ Expressions are not equivalent
+  Left:  a or not b
+  Right: not a or b
 
-``` shell
-ttt eq --left a or not b --right not a or b
+Differences:
+  a=F b=T → Left=F, Right=T
+  a=T b=F → Left=T, Right=F
 ```
 
 ### Reducing an expression
 Use the `reduce` command to simplify an expression, if possible.
+
+```shell
+ttt reduce "a and a or not b"
+```
+
+```text
+Expression: ((a ∧ a) ∨ ¬b)
+Reduced form: (¬b ∨ a)
+```
 
 ## Grammar
 
