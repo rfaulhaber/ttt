@@ -389,17 +389,7 @@ mod tests {
         let result = get_expression_input(args).unwrap();
         assert_eq!(result, "a and b");
     }
-    
-    #[test]
-    fn test_get_expression_input_empty() {
-        // This test is skipped because we can't easily mock stdin in unit tests
-        // The function works correctly in the real CLI when reading from stdin
-        // We just verify the function exists and compiles
-        let _args: Vec<String> = vec![];
-        let _ = get_expression_input;
-        // In real usage, this would read from stdin successfully
-    }
-    
+
     #[test]
     fn test_get_equivalence_expressions_with_two_args() {
         let result = get_equivalence_expressions(
