@@ -6,7 +6,7 @@ use std::collections::HashMap;
 #[test]
 fn test_truth_table_workflow() {
     // Parse expression
-    let mut parser = Parser::from_str("a and b");
+    let mut parser = Parser::new("a and b");
     let expr = parser.parse().expect("Should parse successfully");
     
     // Generate truth table
@@ -31,8 +31,8 @@ fn test_truth_table_workflow() {
 #[test]
 fn test_equivalence_check_workflow() {
     // Parse expressions
-    let mut parser1 = Parser::from_str("a and b");
-    let mut parser2 = Parser::from_str("b and a");
+    let mut parser1 = Parser::new("a and b");
+    let mut parser2 = Parser::new("b and a");
     let expr1 = parser1.parse().expect("Should parse left expression");
     let expr2 = parser2.parse().expect("Should parse right expression");
     
@@ -50,8 +50,8 @@ fn test_equivalence_check_workflow() {
 #[test]
 fn test_non_equivalent_expressions() {
     // Parse different expressions
-    let mut parser1 = Parser::from_str("a and b");
-    let mut parser2 = Parser::from_str("a or b");
+    let mut parser1 = Parser::new("a and b");
+    let mut parser2 = Parser::new("a or b");
     let expr1 = parser1.parse().expect("Should parse left expression");
     let expr2 = parser2.parse().expect("Should parse right expression");
     
@@ -75,7 +75,7 @@ fn test_non_equivalent_expressions() {
 #[test]
 fn test_reduction_workflow() {
     // Parse expression
-    let mut parser = Parser::from_str("a or not a");
+    let mut parser = Parser::new("a or not a");
     let expr = parser.parse().expect("Should parse expression");
     
     // Attempt reduction
@@ -89,7 +89,7 @@ fn test_reduction_workflow() {
 #[test]
 fn test_complex_expression_workflow() {
     // Test complex expression with multiple operators and precedence
-    let mut parser = Parser::from_str("(a or b) and (not c -> d)");
+    let mut parser = Parser::new("(a or b) and (not c -> d)");
     let expr = parser.parse().expect("Should parse complex expression");
     
     // Generate truth table
@@ -128,7 +128,7 @@ fn test_all_operator_types() {
     ];
     
     for (expr_str, description) in test_cases {
-        let mut parser = Parser::from_str(expr_str);
+        let mut parser = Parser::new(expr_str);
         let expr = parser.parse().expect(&format!("Should parse {}", description));
         
         // Verify we can generate truth table
@@ -155,10 +155,10 @@ fn test_variable_collection() {
     ];
     
     for (expr_str, expected_vars) in test_cases {
-        let mut parser = Parser::from_str(expr_str);
+        let mut parser = Parser::new(expr_str);
         let expr = parser.parse().expect(&format!("Should parse {}", expr_str));
         
-        let collected = Evaluator::collect_expression_variables(&expr);
+        let collected = Evaluator::collect_expression_variables(&expr).unwrap();
         
         assert_eq!(collected.len(), expected_vars.len(), 
                   "Variable count mismatch for {}", expr_str);
@@ -184,7 +184,7 @@ fn test_expression_evaluation_with_assignments() {
     ];
     
     for (expr_str, assignments, expected_result) in test_cases {
-        let mut parser = Parser::from_str(expr_str);
+        let mut parser = Parser::new(expr_str);
         let expr = parser.parse().expect(&format!("Should parse {}", expr_str));
         
         let mut assignment_map = HashMap::new();
@@ -211,7 +211,7 @@ fn test_error_handling_in_workflow() {
     ];
     
     for invalid_expr in invalid_expressions {
-        let mut parser = Parser::from_str(invalid_expr);
+        let mut parser = Parser::new(invalid_expr);
         let result = parser.parse();
         
         assert!(result.is_err(), 

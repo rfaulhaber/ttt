@@ -123,7 +123,7 @@ impl Lexer {
                 Some((Token::Implication, Span::new(start, self.position)))
             }
             // Unicode arrow: →
-            c if c == '\u{2192}' => {
+            '\u{2192}' => {
                 self.advance();
                 Some((Token::Implication, Span::new(start, self.position)))
             }
@@ -133,7 +133,7 @@ impl Lexer {
                 Some((Token::And, Span::new(start, self.position)))
             }
             // Unicode and: ∧
-            c if c == '\u{2227}' => {
+            '\u{2227}' => {
                 self.advance();
                 Some((Token::And, Span::new(start, self.position)))
             }
@@ -143,7 +143,7 @@ impl Lexer {
                 Some((Token::Or, Span::new(start, self.position)))
             }
             // Unicode or: ∨
-            c if c == '\u{2228}' => {
+            '\u{2228}' => {
                 self.advance();
                 Some((Token::Or, Span::new(start, self.position)))
             }
@@ -152,7 +152,7 @@ impl Lexer {
                 Some((Token::Not, Span::new(start, self.position)))
             }
             // Unicode not: ¬
-            c if c == '\u{00AC}' => {
+            '\u{00AC}' => {
                 self.advance();
                 Some((Token::Not, Span::new(start, self.position)))
             }

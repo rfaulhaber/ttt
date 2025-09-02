@@ -4,7 +4,7 @@ use ttt::source::{Parser, Expr};
 #[test]
 fn test_readme_table_example() {
     // From README: ttt table a or not b
-    let mut parser = Parser::from_str("a or not b");
+    let mut parser = Parser::new("a or not b");
     let result = parser.parse().expect("Should parse README table example");
     
     let expected = Expr::Or(
@@ -22,10 +22,10 @@ fn test_readme_equivalence_examples() {
     let left_expr = "a or not b";
     let right_expr = "not a or b";
     
-    let mut parser1 = Parser::from_str(left_expr);
+    let mut parser1 = Parser::new(left_expr);
     let left_result = parser1.parse().expect("Should parse left expression");
     
-    let mut parser2 = Parser::from_str(right_expr);  
+    let mut parser2 = Parser::new(right_expr);  
     let right_result = parser2.parse().expect("Should parse right expression");
     
     // Verify both parse successfully (equivalence logic would be separate)
@@ -64,7 +64,7 @@ fn test_readme_grammar_examples() {
     ];
     
     for (expr, description) in operator_examples {
-        let mut parser = Parser::from_str(expr);
+        let mut parser = Parser::new(expr);
         let result = parser.parse();
         assert!(result.is_ok(), "Failed to parse {}: {}", description, expr);
     }
@@ -75,23 +75,23 @@ fn test_readme_grammar_structure() {
     // Test the grammar structure: (unary operator)? identifier ((binary operator) expr)?
     
     // Just identifier
-    let mut parser1 = Parser::from_str("x");
+    let mut parser1 = Parser::new("x");
     assert!(parser1.parse().is_ok());
     
     // Unary operator + identifier  
-    let mut parser2 = Parser::from_str("not x");
+    let mut parser2 = Parser::new("not x");
     assert!(parser2.parse().is_ok());
     
     // Identifier + binary operator + expression
-    let mut parser3 = Parser::from_str("x and y");
+    let mut parser3 = Parser::new("x and y");
     assert!(parser3.parse().is_ok());
     
     // Unary operator + identifier + binary operator + expression
-    let mut parser4 = Parser::from_str("not x and y");
+    let mut parser4 = Parser::new("not x and y");
     assert!(parser4.parse().is_ok());
     
     // Complex nested case
-    let mut parser5 = Parser::from_str("not x and y or z");
+    let mut parser5 = Parser::new("not x and y or z");
     assert!(parser5.parse().is_ok());
 }
 
@@ -102,7 +102,7 @@ fn test_identifier_constraints() {
     // Valid identifiers
     let valid_identifiers = ["a", "variable", "var_name", "P", "Q", "proposition"];
     for id in valid_identifiers {
-        let mut parser = Parser::from_str(id);
+        let mut parser = Parser::new(id);
         let result = parser.parse().expect(&format!("Should parse identifier: {}", id));
         assert_eq!(result, Expr::Identifier(id.to_string()));
     }
@@ -115,7 +115,7 @@ fn test_identifier_constraints() {
         ("a xor b", "xor"),
     ];
     for (expr, keyword) in keyword_expressions {
-        let mut parser = Parser::from_str(expr);
+        let mut parser = Parser::new(expr);
         let result = parser.parse();
         assert!(result.is_ok(), "Keywords should work as operators: {} in '{}'", keyword, expr);
         

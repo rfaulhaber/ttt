@@ -1,5 +1,6 @@
 use crate::source::lexer::{Lexer, Token, SpannedToken, Span};
 use std::fmt;
+use std::str::FromStr;
 use thiserror::Error;
 use miette::{Diagnostic, SourceSpan};
 use serde::{Serialize, Deserialize};
@@ -71,10 +72,6 @@ impl Parser {
         Self { tokens, current: 0 }
     }
     
-    // Keep from_str as an alias for consistency, but make it just call new
-    pub fn from_str(input: &str) -> Self {
-        Self::new(input)
-    }
     
     fn current_token(&self) -> SpannedToken {
         self.tokens.get(self.current).cloned().unwrap_or_else(|| {
@@ -210,27 +207,35 @@ impl Parser {
     }
 }
 
+impl FromStr for Parser {
+    type Err = ();
+    
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::new(s))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     
     #[test]
     fn test_parse_simple_identifier() {
-        let mut parser = Parser::from_str("a");
+        let mut parser = Parser::new("a");
         let result = parser.parse().unwrap();
         assert_eq!(result, Expr::Identifier("a".to_string()));
     }
     
     #[test]
     fn test_parse_not() {
-        let mut parser = Parser::from_str("not a");
+        let mut parser = Parser::new("not a");
         let result = parser.parse().unwrap();
         assert_eq!(result, Expr::Not(Box::new(Expr::Identifier("a".to_string()))));
     }
     
     #[test]
     fn test_parse_and() {
-        let mut parser = Parser::from_str("a and b");
+        let mut parser = Parser::new("a and b");
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -243,7 +248,7 @@ mod tests {
     
     #[test]
     fn test_parse_complex() {
-        let mut parser = Parser::from_str("a or not b");
+        let mut parser = Parser::new("a or not b");
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -256,7 +261,7 @@ mod tests {
     
     #[test]
     fn test_parse_with_parentheses() {
-        let mut parser = Parser::from_str("(a or b) and c");
+        let mut parser = Parser::new("(a or b) and c");
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -272,7 +277,7 @@ mod tests {
     
     #[test]
     fn test_operator_precedence() {
-        let mut parser = Parser::from_str("a or b and c");
+        let mut parser = Parser::new("a or b and c");
         let result = parser.parse().unwrap();
         // Should parse as: a or (b and c)
         assert_eq!(
@@ -289,7 +294,7 @@ mod tests {
     
     #[test]
     fn test_implication() {
-        let mut parser = Parser::from_str("a -> b");
+        let mut parser = Parser::new("a -> b");
         let result = parser.parse().unwrap();
         assert_eq!(
             result,

@@ -48,13 +48,17 @@
 
         formatter = pkgs.alejandra;
 
-        packages.${projectName} = pkgs.rustPlatform.buildRustPackage {
-          pname = projectName;
-          version = "0.1.0";
-          src = ./.;
-          cargoLock.lockFile = ./Cargo.lock;
+        packages = {
+          ${projectName} = pkgs.rustPlatform.buildRustPackage {
+            pname = projectName;
+            version = "0.1.0";
+            src = ./.;
+            cargoLock.lockFile = ./Cargo.lock;
 
-          meta.mainProgram = projectName;
+            meta.mainProgram = projectName;
+          };
+
+          default = self'.packages.${projectName};
         };
 
         devShells.default = pkgs.mkShell {

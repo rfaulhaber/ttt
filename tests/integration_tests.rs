@@ -15,7 +15,7 @@ fn test_parse_workflow() {
     ];
     
     for (input, expected_display) in test_cases {
-        let mut parser = Parser::from_str(input);
+        let mut parser = Parser::new(input);
         let result = parser.parse().expect(&format!("Failed to parse: {}", input));
         assert_eq!(result.to_string(), expected_display, "Input: {}", input);
     }
@@ -34,8 +34,8 @@ fn test_mixed_operator_formats() {
     ];
     
     for (expr1, expr2) in equivalent_expressions {
-        let mut parser1 = Parser::from_str(expr1);
-        let mut parser2 = Parser::from_str(expr2);
+        let mut parser1 = Parser::new(expr1);
+        let mut parser2 = Parser::new(expr2);
         
         let result1 = parser1.parse().expect(&format!("Failed to parse: {}", expr1));
         let result2 = parser2.parse().expect(&format!("Failed to parse: {}", expr2));
@@ -75,7 +75,7 @@ fn test_operator_precedence() {
     ];
     
     for (input, expected) in precedence_tests {
-        let mut parser = Parser::from_str(input);
+        let mut parser = Parser::new(input);
         let result = parser.parse().expect(&format!("Failed to parse: {}", input));
         assert_eq!(result, expected, "Input: {}", input);
     }
@@ -101,7 +101,7 @@ fn test_parentheses_override_precedence() {
     ];
     
     for (input, expected) in parentheses_tests {
-        let mut parser = Parser::from_str(input);
+        let mut parser = Parser::new(input);
         let result = parser.parse().expect(&format!("Failed to parse: {}", input));
         assert_eq!(result, expected, "Input: {}", input);
     }
@@ -118,7 +118,7 @@ fn test_complex_nested_expressions() {
     ];
     
     for input in complex_cases {
-        let mut parser = Parser::from_str(input);
+        let mut parser = Parser::new(input);
         let result = parser.parse();
         assert!(result.is_ok(), "Failed to parse complex expression: {}", input);
         

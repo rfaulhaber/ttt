@@ -1,0 +1,82 @@
+name: Nix Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  nix-build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            system: x86_64-linux
+          - os: macos-latest
+            system: x86_64-darwin
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Nix
+      uses: cachix/install-nix-action@v26
+      with:
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+
+    - name: Check flake
+      run: nix flake check
+    
+    - name: Build package
+      run: nix build .#ttt --print-build-logs
+    
+    - name: Test package runs
+      run: |
+        ./result/bin/ttt --help
+        ./result/bin/ttt --version || echo "Version command may not be implemented yet"
+    
+    - name: Run tests with Nix
+      run: nix develop --command cargo test
+    
+    - name: Run clippy with Nix
+      run: nix develop --command cargo clippy -- -D warnings
+
+  nix-build-aarch64:
+    # Only test aarch64-linux on ubuntu since GitHub doesn't provide native aarch64 runners
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Nix
+      uses: cachix/install-nix-action@v26
+      with:
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          extra-platforms = aarch64-linux
+    
+    - name: Setup Cachix
+      uses: cachix/cachix-action@v14
+      with:
+        name: nix-community
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+        skipPush: true
+    
+    - name: Install QEMU for cross-compilation
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-user-static
+    
+    - name: Build for aarch64-linux
+      run: nix build .#ttt --system aarch64-linux --print-build-logs
+    
+    - name: Verify aarch64 binary
+      run: |
+        file ./result/bin/ttt
+        # Note: Cannot run aarch64 binary on x86_64 without emulation setup
